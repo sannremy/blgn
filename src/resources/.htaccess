@@ -1,0 +1,22 @@
+Options +FollowSymlinks -Indexes
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^www.srchea.com$ [NC]
+RewriteRule ^(.*)$ http://srchea.com/$1 [L,R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^blog/([0-9]{4})/([0-9]{2})/([^.]+)/$ /$3 [L,R=301]
+RewriteRule ^blog/tag/([^.]+)/$ /tag/$1 [L,R=301]
+RewriteRule ^blog/apps/$ /playground [L,R=301]
+RewriteRule ^blog/about/$ /about [L,R=301]
+RewriteRule ^blog/$ / [L,R=301]
+
+ErrorDocument 400 /err/400
+ErrorDocument 401 /err/401
+ErrorDocument 403 /err/403
+ErrorDocument 404 /err/404
+ErrorDocument 500 /err/500
