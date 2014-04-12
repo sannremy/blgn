@@ -11,10 +11,10 @@ var blgn = new Blgn({
 
 blgn.generate('home', {
 		head: {
-			title: 'Latest posts - '
+			title: "Homepage title (head)"
 		},
 		page: {
-			title: "Enthusiastic Developer's blog",
+			title: "Homepage title (body)",
 		},
 	})
 	.generate('posts')
