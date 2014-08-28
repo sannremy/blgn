@@ -20,7 +20,7 @@ function Data(options) {
 		var markdownPosts = this.getMarkdownFiles('posts'),
 			i, category, categories = [], tags = [], metadata, posts = [], post, dates, date, tag, years = [];
 
-		for(i in markdownPosts) {
+		for(i = 0; i < markdownPosts.length; i++) {
 
 			metadata = this.getMetadata(markdownPosts[i]);
 
@@ -60,12 +60,12 @@ function Data(options) {
 
 			// post's tags
 			if(typeof metadata.tags !== 'undefined') {
-				for(i = 0; i < metadata.tags.length; i++) {
+				for(var j = 0; j < metadata.tags.length; j++) {
 					tag = {
-						lower: this.toLower(metadata.tags[i]),
-						raw: metadata.tags[i],
-						css: this.toCss(metadata.tags[i]),
-						url: this.toUrl(metadata.tags[i]),
+						lower: this.toLower(metadata.tags[j]),
+						raw: metadata.tags[j],
+						css: this.toCss(metadata.tags[j]),
+						url: this.toUrl(metadata.tags[j]),
 					};
 					post.tags.push(tag);
 					tags.push(tag); // overall tags
@@ -106,7 +106,7 @@ function Data(options) {
 
 		// pages
 		var markdownPages = this.getMarkdownFiles('pages'), pages = [], page;
-		for(i in markdownPages) {
+		for(i = 0; i < markdownPages.length; i++) {
 			metadata = this.getMetadata(markdownPages[i]);
 
 			page = {
@@ -142,7 +142,7 @@ function Data(options) {
 			var files = fs.readdirSync(path),
 				i, stat, file, output, markdown;
 
-			for(i in files) {
+			for(i = 0; i < files.length; i++) {
 				file = path + '/' + files[i];
 				stat = fs.statSync(file);
 
@@ -163,7 +163,7 @@ function Data(options) {
 	this.getMetadata = function(markdown) {
 		var tokens = marked.lexer(markdown),
 			metaRegex = /([a-zA-Z_]+): (.+)/g,
-			metadata = [], metaResult, tags;
+			metadata = [], metaResult, tags, i;
 
 		if(typeof tokens[0] !== 'undefined' && tokens[0].type === 'html') {
 			while((metaResult = metaRegex.exec(tokens[0].text)) !== null) {
@@ -171,7 +171,7 @@ function Data(options) {
 
 					if(metaResult[1] === 'tags') {
 						tags = metaResult[2].split(',');
-						for(var i in tags) {
+						for(i = 0; i < tags.length; i++) {
 							tags[i] = tags[i].trim();
 						}
 						metadata[metaResult[1]] = tags;
@@ -189,10 +189,15 @@ function Data(options) {
 
 	this.getOverview = function(post, length) {
 		var overview = this.stripHtml(post.source.html);
-		var next = 1;
-		while(overview.charAt(length) !== ' ') {
-			length += (overview.charAt(length).match(/[^\w]+/g) !== null ? 2 : 1);
+
+		if(overview.length > length) {
+			while(overview.charAt(length) !== ' ') {
+				length += (overview.charAt(length).match(/[^\w]+/g) !== null ? 2 : 1);
+			}
+		} else {
+			length = overview.length;
 		}
+
 		return overview.substr(0, length);
 	};
 
@@ -204,7 +209,7 @@ function Data(options) {
 		var distinctValues = [], lowerValues = [], lowerValue,
 			i;
 
-		for(i in values) {
+		for(i = 0; i < values.length; i++) {
 			lowerValue = values[i].lower;
 			if(lowerValues.indexOf(lowerValue) === -1) {
 				distinctValues.push(values[i]);

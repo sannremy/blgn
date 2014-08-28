@@ -25,8 +25,8 @@ function BlgnCommand(options, variables) {
 			} else {
 				var variableTmp = this.variables;
 				var variableItems = arg.split('.');
-				var i = 0;
-				for(i in variableItems) {
+				var i;
+				for(i = 0; i < variableItems.length; i++) {
 					if(variableTmp[variableItems[i]] !== undefined) {
 						variableTmp = variableTmp[variableItems[i]];
 					} else {
@@ -56,7 +56,7 @@ function BlgnCommand(options, variables) {
 		var variableList = this.variables;
 		var variableItems = list.split('.');
 		var i, replacements = [];
-		for(i in variableItems) {
+		for(i = 0; i < variableItems.length; i++) {
 			if(variableList[variableItems[i]] !== undefined) {
 				variableList = variableList[variableItems[i]];
 			} else {
@@ -67,9 +67,9 @@ function BlgnCommand(options, variables) {
 		if(typeof variableList === 'object' && Array.isArray(variableList)) {
 			var BlgnInterpreter = require('./interpreter'),
 				sequence = '%' + args.substr(list.length + 1, args.length) + '%',
-				tokens, interpreter;
+				tokens, interpreter, i;
 
-			for(i in variableList) {
+			for(i = 0; i < variableList.length; i++) {
 				interpreter = new BlgnInterpreter(this.options, variableList[i]);
 				tokens = interpreter.tokenize(sequence);
 				replacements.push(interpreter.dispatch(tokens));

@@ -9,7 +9,7 @@
 
 		this.variables = {};
 		this.options = options;
-		this.minifier = new BlgnMinifier();
+		this.minifier = new BlgnMinifier(this.options);
 
 		if(typeof this.options.output === 'undefined') {
 			this.options.output = '../bin/';
@@ -21,7 +21,7 @@
 			this.options.fileVersion = '?' + this.options.fileVersion;
 		}
 
-		// needs uglifyJS2 and ycssmin
+		// needs uglifyJS2, ycssmin and html-minifier
 		if(typeof this.options.minify === 'undefined' || typeof this.options.minify !== 'boolean') {
 			this.options.minify = true;
 		}
@@ -47,14 +47,17 @@
 
 			var i, tokens, replacement;
 			var interpreter = new BlgnInterpreter(this.options, this.variables);
-			for(i in sequences) {
-				tokens = interpreter.tokenize(sequences[i]);
-				replacement = interpreter.dispatch(tokens);
 
-				if(replacement !== null) {
-					output = output.replace(sequences[i], replacement);
-				} else {
-					throw new Error('Replacement crashed: "' + sequences[i] + '" by "' + replacement + '"');
+			if(sequences !== null) {
+				for(i = 0; i < sequences.length; i++) {
+					tokens = interpreter.tokenize(sequences[i]);
+					replacement = interpreter.dispatch(tokens);
+
+					if(replacement !== null) {
+						output = output.replace(sequences[i], replacement);
+					} else {
+						throw new Error('Replacement crashed: "' + sequences[i] + '" by "' + replacement + '"');
+					}
 				}
 			}
 
@@ -97,23 +100,18 @@
 				var files = fs.readdirSync(from),
 					i, stat, file, fileContent, fromFile, toFile;
 
-				for(i in files) {
+				for(i = 0; i < files.length; i++) {
 					fromFile = from + '/' + files[i];
 					toFile = to + '/' + files[i];
 					stat = fs.statSync(fromFile);
 
 					if(stat.isDirectory()) {
-						if(fs.existsSync(toFile)) {
-							fs.unlinkSync(toFile);
+						if(!fs.existsSync(toFile)) {
+							fs.mkdirSync(toFile);
 						}
 
-						fs.mkdirSync(toFile);
 						this.copyFolder(fromFile, toFile);
 					} else if(stat.isFile()) {
-						if(fs.existsSync(toFile)) {
-							fs.unlinkSync(toFile);
-						}
-
 						fileContent = fs.readFileSync(fromFile);
 
 						if(this.options.minify && fromFile.substr(-3) === '.js') {
@@ -126,6 +124,32 @@
 					}
 				}
 			}
+		};
+
+		this.removeFolder = function(folder) {
+			if(fs.existsSync(folder)) {
+				var files = fs.readdirSync(folder), stat, i, file;
+				for(i = 0; i < files.length; i++) {
+					file = folder + files[i];
+					if(fs.existsSync(file)) {
+						stat = fs.statSync(file);
+						if(stat.isDirectory()) {
+							this.removeFolder(file + '/');
+						} else if(stat.isFile()) {
+							fs.unlinkSync(file);
+						}
+					}
+				}
+
+				fs.rmdirSync(folder);
+			}
+		};
+
+		this.removeOutputFolder = function() {
+			var folder = this.options.output;
+			this.removeFolder(folder);
+
+			return this;
 		};
 
 		this.generate = function(page, variables) {
@@ -204,11 +228,11 @@
 							};
 						} else if(page === 'tags') {
 							this.variables.head = {
-								title: 'Posts tagged ' + list[i].raw + ' - '
+								title: 'Posts on ' + list[i].raw + ' - '
 							};
 
 							this.variables.page = {
-								title: 'Posts tagged <span class="hashtag">#</span>' + list[i].raw,
+								title: 'Posts on <span class="hashtag ' + list[i].css + '">' + list[i].raw + '</span>',
 							};
 						} else {
 							continue;
