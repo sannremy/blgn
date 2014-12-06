@@ -69,12 +69,18 @@
 		};
 
 		this.writeToFile = function(file, content) {
-			var path = this.options.output + file;
+
+			var pathFolder = this.options.output;
+
+			if(!fs.existsSync(pathFolder)) {
+				fs.mkdirSync(pathFolder);
+			}
 
 			// folders?
+			var path = this.options.output + file;
 			var folders = path.split('/');
-			if(folders.length - 1 > 0) {
-				var pathFolder = this.options.output;
+
+			if(folders.length > 1) {
 				for(var i = 0; i < folders.length - 1; i++) {
 					pathFolder += '/' + folders[i];
 					if(!fs.existsSync(pathFolder)) {
@@ -189,7 +195,7 @@
 						this.variables.head = {
 							title: list[i].metadata.title + ' - '
 						};
-						
+
 						this.variables.page = {
 							title: list[i].metadata.title,
 						};
@@ -239,7 +245,7 @@
 						}
 
 						for(j = 0; j < posts.length; j++) {
-							
+
 							if(page === 'years' && posts[j].date.year === list[i].raw) {
 								k++;
 							} else if(page === 'tags') {
