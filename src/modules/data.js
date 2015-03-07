@@ -17,6 +17,18 @@ function Data(options) {
 			options.postsSort = 'desc'; // by default
 		}
 
+		if(typeof options.overviewLength !== 'undefined') {
+			options.overviewLength = parseInt(options.overviewLength, 10);
+		} else {
+			options.overviewLength = 200; // by default
+		}
+
+		if(typeof options.removeUpdateBlocks !== 'undefined') {
+			options.removeUpdateBlocks = !!options.removeUpdateBlocks;
+		} else {
+			options.removeUpdateBlocks = false; // by default
+		}
+
 		var markdownPosts = this.getMarkdownFiles('posts'),
 			i, category, categories = [], tags = [], metadata, posts = [], post, dates, date, tag, years = [];
 
@@ -36,7 +48,7 @@ function Data(options) {
 				category: {},
 			};
 
-			post.overview = this.getOverview(post, 200);
+			post.overview = this.getOverview(post, options.overviewLength, options.removeUpdateBlocks);
 
 			// post's date
 			if(typeof metadata.date !== 'undefined') {
@@ -152,7 +164,7 @@ function Data(options) {
 				}
 			}
 		}
-		
+
 		return list;
 	};
 
@@ -187,8 +199,17 @@ function Data(options) {
 		return metadata;
 	};
 
-	this.getOverview = function(post, length) {
-		var overview = this.stripHtml(post.source.html);
+	this.getOverview = function(post, length, removeUpdateBlocks) {
+		var source = post.source.html;
+
+		// remove class="updates"
+		removeUpdateBlocks = removeUpdateBlocks || false;
+		if(removeUpdateBlocks) {
+			var regex = /<div class="updates">(.*)<\/div>/g;
+			source = source.replace(regex, '');
+		}
+
+		var overview = this.stripHtml(source);
 
 		if(overview.length > length) {
 			while(overview.charAt(length) !== ' ') {
@@ -236,7 +257,7 @@ function Data(options) {
 		return (value + '').toLowerCase().replace(/([^\w]+)/g, ' ').trim().replace(/ /g, '-');
 	};
 
-	return this.initialize();
+	return this.initialize(options);
 }
 
 module.exports = Data;

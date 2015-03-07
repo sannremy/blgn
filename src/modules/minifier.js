@@ -7,6 +7,7 @@ function BlgnMinifier(options) {
 	this.UglifyJS = require("uglify-js");
 	this.cssmin = require('ycssmin').cssmin;
 	this.htmlMinifier = require('html-minifier');
+	this.prettyData = require('pretty-data').pd;
 
 	this.minifyHtml = function(input) {
 		return this.htmlMinifier.minify(input, {
@@ -27,6 +28,10 @@ function BlgnMinifier(options) {
 			fromString: true
 		}).code;
 	};
+
+	this.minifyXml = function(input) {
+		return this.prettyData.xmlmin(input, false);
+	}
 
 	this.minifyIdsClasses = function() {
 		if(fs.existsSync(this.options.output)) {

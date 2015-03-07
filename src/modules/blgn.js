@@ -61,14 +61,18 @@
 				}
 			}
 
-			if(this.options.minify) {
-				output = this.minifier.minifyHtml(output);
-			}
-
 			return output;
 		};
 
 		this.writeToFile = function(file, content) {
+
+			if(this.options.minify) {
+				if(file.substr(-5) === '.html') {
+					content = this.minifier.minifyHtml(content);
+				} else if(file.substr(-4) === '.xml' || file.substr(-4) === '.rss') {
+					content = this.minifier.minifyXml(content);
+				}
+			}
 
 			var pathFolder = this.options.output;
 
@@ -166,7 +170,9 @@
 			var html, i;
 			this.variables = variables;
 			var Data = require('./data');
-			this.variables.data = new Data();
+			this.variables.data = new Data({
+				removeUpdateBlocks: true
+			});
 			var posts = this.variables.data.posts;
 
 			switch(page) {
@@ -299,6 +305,28 @@
 							this.writeToFile('err/' + httpErrors[i] + '.html', html);
 						}
 					}
+				break;
+				case 'rss' :
+					var j = 0,
+						tags = [];
+
+					for(i = 0; i < posts.length; i++) {
+
+						tags = [];
+						posts[i].guid = posts[i].url;
+
+						for(j = 0; j < posts[i].tags.length; j++) {
+							tags.push(posts[i].tags[j].raw);
+						}
+
+						posts[i].tagsString = tags.join(', ');
+
+						posts[i].pubDate = posts[i].date.object.toUTCString();
+					}
+
+					var xml = this.process('base_rss.tpl');
+					this.writeToFile('rss/posts.xml', xml);
+
 				break;
 				default :
 				break;
