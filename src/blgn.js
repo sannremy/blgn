@@ -12,7 +12,7 @@
 		this.minifier = new BlgnMinifier(this.options);
 
 		if(typeof this.options.output === 'undefined') {
-			this.options.output = '../bin/';
+			this.options.output = process.cwd() + '/../output/';
 		}
 
 		if(typeof this.options.fileVersion === 'undefined') {
@@ -177,20 +177,7 @@
 
 			switch(page) {
 				case 'home' :
-					this.variables.postsOverview1 = [];
-					this.variables.postsOverview2 = [];
-					this.variables.postsOverview3 = [];
-
-					for(i = 0; i < posts.length; i++) {
-						if(i % 3 === 0) {
-							this.variables.postsOverview1.push(posts[i]);
-						} else if(i % 3 === 1) {
-							this.variables.postsOverview2.push(posts[i]);
-						} else if(i % 3 === 2) {
-							this.variables.postsOverview3.push(posts[i]);
-						}
-					}
-
+					this.variables.postsOverview = posts;
 					html = this.process('base_post_lists.tpl');
 					this.writeToFile('index.html', html);
 				break;
@@ -226,6 +213,7 @@
 					var list = this.variables.data[page];
 					for(i = 0; i < list.length; i++) {
 						k = -1;
+						this.variables.postsOverview = posts;
 						this.variables.postsOverview1 = [];
 						this.variables.postsOverview2 = [];
 						this.variables.postsOverview3 = [];

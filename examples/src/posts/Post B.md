@@ -1,8 +1,8 @@
 <!--
-  tags: Tag 1, Tag 2, Tag 3
+  tags: Tag 1, Tag 2
   category: Category 1
-  title: Post title
-  date: 2014-01-01
+  title: Post title B
+  date: 2014-02-03
 -->
 
 This is an example of post
@@ -10,5 +10,5 @@ This is an example of post
 
 Here is a list:
 
-  * Hello
-  * This is dog
+  * Item 1
+  * Item 2

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?><rss version="2.0"><channel><title></title><link></link><description></description><language>en-us</language><item><title>Post title B</title><pubDate>Mon, 03 Feb 2014 00:00:00 GMT</pubDate><link>post-title-b</link><author></author><description>
+This is an example of post
+Here is a list:
+
+Item 1
+Item 2
+
+</description><comments>post-title-b#comments</comments><category>Tag 1, Tag 2</category><source url=""></source><guid isPermaLink="true">post-title-b</guid></item><item><title>Post title A</title><pubDate>Wed, 01 Jan 2014 00:00:00 GMT</pubDate><link>post-title-a</link><author></author><description>
+This is an example of post
+Here is a list:
+
+Item 1
+Item 2
+
+</description><comments>post-title-a#comments</comments><category>Tag 1, Tag 2, Tag 3</category><source url=""></source><guid isPermaLink="true">post-title-a</guid></item></channel></rss>

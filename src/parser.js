@@ -4,15 +4,16 @@ function BlgnParser() {
 
 	this.getOutput = function(file) {
 		var fs = require('fs');
+		var path = require("path");
 
-		var path = 'templates/' + file;
+		var filepath = path.resolve(process.cwd(), 'templates', file);
 		var output = null;
-		if(fs.existsSync(path)) {
-			output = fs.readFileSync(path, 'utf8');
+		if(fs.existsSync(filepath)) {
+			output = fs.readFileSync(filepath, 'utf8');
 		}
 
-		if(typeof output === 'undefined' || output === null) {
-			throw new Error('Output of ' + path + ' is empty');
+		if(output === undefined || output === null) {
+			throw new Error('Output of ' + filepath + ' is empty');
 		}
 
 		return output;

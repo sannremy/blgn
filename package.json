@@ -23,5 +23,8 @@
     "pretty-data": "^0.40.0",
     "uglify-js": "^2.4.23",
     "ycssmin": "^1.0.1"
+  },
+  "devDependencies": {
+    "marked": "^0.3.3"
   }
 }

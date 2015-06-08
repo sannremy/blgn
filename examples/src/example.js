@@ -1,10 +1,9 @@
 "use strict";
 
-var Blgn = require('./modules/blgn');
+var Blgn = require('../../src/blgn');
 
 // generate all static pages
 var blgn = new Blgn({
-	output: '../bin/',
 	fileVersion: Math.floor((new Date()).getTime() / 1000).toString(16).substr(-8),
 	version: '0.1-a',
 });
@@ -21,5 +20,6 @@ blgn.generate('home', {
 	.generate('years')
 	.generate('tags')
 	.generate('pages')
+	.generate('rss')
 	.generate('errors')
 	.copyFolder('resources');

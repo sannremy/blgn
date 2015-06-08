@@ -2,6 +2,6 @@
 <html>
 	%include modules/head.tpl%
 	<body>
-	Hello World! :)
+		%print currentPage.source.html%
 	</body>
 </html>
