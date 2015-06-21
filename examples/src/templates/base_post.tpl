@@ -3,7 +3,7 @@
 	%include modules/head.tpl%
 	<body>
 		<section>
-			<a href="/year/%print currentPost.date.year%.html" title="%print currentPost.date.year%">
+			<a href="../year/%print currentPost.date.year%.html" title="%print currentPost.date.year%">
 				<time datetime="%print currentPost.date.iso%">%print currentPost.date.month% %print currentPost.date.year%</time>
 			</a>
 			<ul>
