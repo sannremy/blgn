@@ -216,26 +216,24 @@
 				break;
 				case 'tags' :
 				case 'years' :
-					var j, k, postTags, tagFound;
+					var j, postTags, tagFound;
 					var list = this.variables.data[page];
+
 					for(i = 0; i < list.length; i++) {
-						k = -1;
-						this.variables.postsOverview = posts;
-						this.variables.postsOverview1 = [];
-						this.variables.postsOverview2 = [];
-						this.variables.postsOverview3 = [];
+
+						this.variables.postsOverview = [];
 
 						if(page === 'years') {
 							this.variables.head = {
-								title: 'Posted in ' + list[i].raw + ' - '
+								title: 'Posted in ' + list[i].raw
 							};
 
 							this.variables.page = {
-								title: 'Posted in ' + list[i].raw,
+								title: 'Posted in ' + list[i].raw
 							};
 						} else if(page === 'tags') {
 							this.variables.head = {
-								title: 'Posts on ' + list[i].raw + ' - '
+								title: 'Posts on ' + list[i].raw
 							};
 
 							this.variables.page = {
@@ -246,34 +244,17 @@
 						}
 
 						for(j = 0; j < posts.length; j++) {
-
 							if(page === 'years' && posts[j].date.year === list[i].raw) {
-								k++;
+								this.variables.postsOverview.push(posts[j]);
 							} else if(page === 'tags') {
-								tagFound = false;
+
 								postTags = posts[j].tags;
 								for(var p = 0; p < postTags.length; p++) {
 									if(list[i].lower === postTags[p].lower) {
-										tagFound = true;
+										this.variables.postsOverview.push(posts[j]);
 										break;
 									}
 								}
-
-								if(!tagFound) {
-									continue;
-								} else {
-									k++;
-								}
-							} else {
-								continue;
-							}
-
-							if(k % 3 === 0) {
-								this.variables.postsOverview1.push(posts[j]);
-							} else if(k % 3 === 1) {
-								this.variables.postsOverview2.push(posts[j]);
-							} else if(k % 3 === 2) {
-								this.variables.postsOverview3.push(posts[j]);
 							}
 						}
 
