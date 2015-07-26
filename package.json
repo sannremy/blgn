@@ -18,7 +18,7 @@
     "url": "https://github.com/srchea/blgn/issues"
   },
   "homepage": "https://github.com/srchea/blgn",
-  "devDependencies": {
+  "dependencies": {
     "html-minifier": "^0.7.2",
     "pretty-data": "^0.40.0",
     "uglify-js": "^2.4.23",
