@@ -1,12 +1,14 @@
 "use strict";
 
-function BlgnParser() {
+function BlgnParser(options) {
+
+	this.options = options;
 
 	this.getOutput = function(file) {
 		var fs = require('fs');
 		var path = require("path");
 
-		var filepath = path.resolve(process.cwd(), 'templates', file);
+		var filepath = path.resolve(this.options.source, 'templates', file);
 		var output = null;
 		if(fs.existsSync(filepath)) {
 			output = fs.readFileSync(filepath, 'utf8');

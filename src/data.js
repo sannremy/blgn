@@ -3,34 +3,39 @@
 function Data(options) {
 
 	var fs = require('fs');
+	var path = require('path');
 	var marked = require('marked');
 	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-	this.initialize = function(options) {
-		if(typeof options !== 'object') {
-			options = {};
-		}
+	this.options = options;
 
-		if(typeof options.postsSort !== 'undefined') {
-			options.postsSort = options.postsSort !== 'asc' ? 'desc' : 'asc';
-		} else {
-			options.postsSort = 'desc'; // by default
-		}
+	if(typeof this.options !== 'object') {
+		this.options = {};
+	}
 
-		if(typeof options.overviewLength !== 'undefined') {
-			options.overviewLength = parseInt(options.overviewLength, 10);
-		} else {
-			options.overviewLength = 200; // by default
-		}
+	if(typeof this.options.postsSort !== 'undefined') {
+		this.options.postsSort = this.options.postsSort !== 'asc' ? 'desc' : 'asc';
+	} else {
+		this.options.postsSort = 'desc'; // by default
+	}
 
-		if(typeof options.removeUpdateBlocks !== 'undefined') {
-			options.removeUpdateBlocks = !!options.removeUpdateBlocks;
-		} else {
-			options.removeUpdateBlocks = false; // by default
-		}
+	if(typeof this.options.overviewLength !== 'undefined') {
+		this.options.overviewLength = parseInt(this.options.overviewLength, 10);
+	} else {
+		this.options.overviewLength = 200; // by default
+	}
 
-		var markdownPosts = this.getMarkdownFiles('posts'),
-			i, category, categories = [], tags = [], metadata, posts = [], post, dates, date, tag, years = [];
+	if(typeof this.options.removeUpdateBlocks !== 'undefined') {
+		this.options.removeUpdateBlocks = !!this.options.removeUpdateBlocks;
+	} else {
+		this.options.removeUpdateBlocks = false; // by default
+	}
+
+	this.initialize = function() {
+
+		var markdownPosts = this.getMarkdownFiles(path.resolve(this.options.source, 'posts')),
+			i, category, categories = [], tags = [], metadata, posts = [], post, dates, date, tag, years = [],
+			self = this;
 
 		for(i = 0; i < markdownPosts.length; i++) {
 
@@ -48,7 +53,7 @@ function Data(options) {
 				category: {},
 			};
 
-			post.overview = this.getOverview(post, options.overviewLength, options.removeUpdateBlocks);
+			post.overview = this.getOverview(post, this.options.overviewLength);
 
 			// post's date
 			if(typeof metadata.date !== 'undefined') {
@@ -110,14 +115,14 @@ function Data(options) {
 		// sort posts
 		posts.sort(function(post1, post2) {
 			if(post1.date.object.getTime() < post2.date.object.getTime()) {
-				return options.postsSort === 'asc' ? -1 : 1;
+				return self.options.postsSort === 'asc' ? -1 : 1;
 			} else {
-				return options.postsSort === 'asc' ? 1 : -1;
+				return self.options.postsSort === 'asc' ? 1 : -1;
 			}
 		});
 
 		// pages
-		var markdownPages = this.getMarkdownFiles('pages'), pages = [], page;
+		var markdownPages = this.getMarkdownFiles(path.resolve(this.options.source, 'pages')), pages = [], page;
 		for(i = 0; i < markdownPages.length; i++) {
 			metadata = this.getMetadata(markdownPages[i]);
 
@@ -147,15 +152,15 @@ function Data(options) {
 		};
 	};
 
-	this.getMarkdownFiles = function(path) {
+	this.getMarkdownFiles = function(folderPath) {
 		var list = [];
 
-		if(fs.existsSync(path)) {
-			var files = fs.readdirSync(path),
+		if(fs.existsSync(folderPath)) {
+			var files = fs.readdirSync(folderPath),
 				i, stat, file, output, markdown;
 
 			for(i = 0; i < files.length; i++) {
-				file = path + '/' + files[i];
+				file = path.resolve(folderPath, files[i]);
 				stat = fs.statSync(file);
 
 				if(stat.isFile() && files[i].substr(-3) === '.md') {
@@ -199,15 +204,15 @@ function Data(options) {
 		return metadata;
 	};
 
-	this.getOverview = function(post, length, removeUpdateBlocks) {
+	this.getOverview = function(post, length) {
 		var source = post.source.html;
 
 		// remove class="updates"
-		removeUpdateBlocks = removeUpdateBlocks || false;
-		if(removeUpdateBlocks) {
-			var regex = /<div class="updates">(.*)<\/div>/g;
-			source = source.replace(regex, '');
-		}
+		// removeUpdateBlocks = removeUpdateBlocks || false;
+		// if(removeUpdateBlocks) {
+		// 	var regex = /<div class="updates">(.*)<\/div>/g;
+		// 	source = source.replace(regex, '');
+		// }
 
 		var overview = this.stripHtml(source);
 
@@ -257,7 +262,7 @@ function Data(options) {
 		return (value + '').toLowerCase().replace(/([^\w]+)/g, ' ').trim().replace(/ /g, '-');
 	};
 
-	return this.initialize(options);
+	return this.initialize();
 }
 
 module.exports = Data;

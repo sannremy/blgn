@@ -5,14 +5,18 @@
 
 		// init
 		var fs = require('fs');
+		var path = require('path');
 		var BlgnMinifier = require('./minifier');
 
 		this.variables = {};
 		this.options = options;
-		this.minifier = new BlgnMinifier(this.options);
+
+		if(typeof this.options.source === 'undefined') {
+			this.options.source = process.cwd();
+		}
 
 		if(typeof this.options.output === 'undefined') {
-			this.options.output = process.cwd() + '/../output/';
+			this.options.output = this.options.source + '/../output/';
 		}
 
 		if(typeof this.options.fileVersion === 'undefined') {
@@ -25,6 +29,8 @@
 		if(typeof this.options.minify === 'undefined' || typeof this.options.minify !== 'boolean') {
 			this.options.minify = true;
 		}
+
+		this.minifier = new BlgnMinifier(this.options);
 
 		this.setOptions = function(options) {
 			this.options = options;
@@ -40,7 +46,7 @@
 			var BlgnParser = require('./parser');
 			var BlgnInterpreter = require('./interpreter');
 
-			var parser = new BlgnParser();
+			var parser = new BlgnParser(this.options);
 			var output = parser.getOutput(file);
 			var sequences = parser.getSequences(output);
 			this.variables._fileVersion = this.options.fileVersion;
@@ -80,11 +86,10 @@
 				fs.mkdirSync(pathFolder);
 			}
 
-			// folders?
-			var path = this.options.output + file;
-			var folders = path.split('/');
+			// if folders don't exist, create them
+			var folders = file.split('/');
 
-			if(folders.length > 1) {
+			if(folders.length) {
 				for(var i = 0; i < folders.length - 1; i++) {
 					pathFolder += '/' + folders[i];
 					if(!fs.existsSync(pathFolder)) {
@@ -93,11 +98,13 @@
 				}
 			}
 
-			fs.exists(path, function(exists) {
+			var filePath = path.resolve(this.options.output, file);
+
+			fs.exists(filePath, function(exists) {
 				if(exists) {
-					fs.unlinkSync(path);
+					fs.unlinkSync(filePath);
 				}
-				fs.writeFile(path, content);
+				fs.writeFile(filePath, content);
 			});
 		};
 
@@ -105,6 +112,8 @@
 			if(typeof to === 'undefined') {
 				to = this.options.output;
 			}
+
+			from = path.resolve(this.options.source, from);
 
 			if(fs.existsSync(from)) {
 				var files = fs.readdirSync(from),
@@ -170,9 +179,7 @@
 			var html, i;
 			this.variables = variables;
 			var Data = require('./data');
-			this.variables.data = new Data({
-				removeUpdateBlocks: true
-			});
+			this.variables.data = new Data(this.options);
 			var posts = this.variables.data.posts;
 
 			switch(page) {
