@@ -1,6 +1,7 @@
 {
   "name": "blgn",
   "version": "0.1.2",
+  "main": "src/blgn.js",
   "description": "Generation of a light-weight blog in Node.js",
   "repository": {
     "type": "git",
